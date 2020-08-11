@@ -49,7 +49,7 @@ router.delete('/:id', getUser, async (req, res) => {
 //patch update only some informations
 //differs from put 
 //patch only updates the things that have been passed by with the request
-router.patch('/', getUser, (req, res) => {
+router.patch('/', getUser, async (req, res) => {
   if (req.body.username != null) {
     res.user.username = req.body.username
   }
@@ -58,6 +58,12 @@ router.patch('/', getUser, (req, res) => {
   }
   if (req.body.password != null) {
     res.user.password = req.body.password
+  }
+  try {
+    const updatedUser = await res.user.save()
+    res.json(updatedUser)
+  } catch (error) {
+    res.status(400).json({ message: error.message })
   }
 })
 
