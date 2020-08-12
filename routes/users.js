@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const User = require('./userModel')
+const User = require('../models/userModel')
 // const getUser = require('./middlewares')
 
 //GET ALL THE USERS
@@ -46,9 +46,6 @@ router.delete('/:id', getUser, async (req, res) => {
 
 
 //UPDATE ONE USER
-//patch update only some informations
-//differs from put 
-//patch only updates the things that have been passed by with the request
 router.patch('/', getUser, async (req, res) => {
   if (req.body.username != null) {
     res.user.username = req.body.username

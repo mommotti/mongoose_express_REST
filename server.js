@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 app.use(express.json())
 
 // users router
-const users = require('./users')
+const users = require('./routes/users')
 app.use('/api/users', users)
 
 
