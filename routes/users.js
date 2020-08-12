@@ -21,17 +21,13 @@ router.get('/:id', getUser, (req, res) => {
 
 //CREATE ONE USER
 router.post('/', async (req, res) => {
-  const salt = await bcrypt.genSalt()
-  const hashedPassword = await bcrypt.hash(req.body.password, salt)
-
+  const hashedPassword = await bcrypt.hash(req.body.password, 10)
   const user = new User({
     username: req.body.username,
     email: req.body.email,
     password: hashedPassword,
   })
   try {
-    console.log(salt)
-    console.log(hashedPassword)
     const newUser = await user.save()
     res.status(201).json(newUser)
   } catch (error) {
@@ -68,6 +64,26 @@ router.patch('/', getUser, async (req, res) => {
     res.status(400).json({ message: error.message })
   }
 })
+
+//LOGIN USER
+router.post('/login', async (req, res) => {
+  const getUser = await User.find({ username: req.body.username })
+  res.status(200).send(getUser)
+  if (getUser == null) {
+    return res.status(404).json({ message: 'Cannot find user' })
+  }
+  try {
+    console.log(getUser[0].password)
+    if (await bcrypt.compare(req.body.password, getUser[0].password)) {
+      res.send('Successfully logged in.')
+    } else {
+      res.send('Not allowed.')
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
+  }
+})
+
 
 async function getUser(req, res, next) {
   try {
