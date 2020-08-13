@@ -67,13 +67,11 @@ router.patch('/', getUser, async (req, res) => {
 
 //LOGIN USER
 router.post('/login', async (req, res) => {
-  const getUser = await User.find({ username: req.body.username })
-  res.status(200).send(getUser)
+  const getUser = await User.find({ email: req.body.email })
   if (getUser == null) {
     return res.status(404).json({ message: 'Cannot find user' })
   }
   try {
-    console.log(getUser[0].password)
     if (await bcrypt.compare(req.body.password, getUser[0].password)) {
       res.send('Successfully logged in.')
     } else {
