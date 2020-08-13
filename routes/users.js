@@ -8,7 +8,7 @@ dotenv.config()
 
 router.use(express.json())
 
-//GET ALL THE USERS
+//GET ALL THE USERS ✅
 router.get('/', async (req, res) => {
   try {
     const users = await User.find()
@@ -19,12 +19,11 @@ router.get('/', async (req, res) => {
   }
 })
 
-//GET ONE USER
+//GET ONE USER ✅
 router.get('/:id', getUser, (req, res) => {
   res.send(res.user.username)
 })
-
-//CREATE ONE USER
+//CREATE ONE USER ✅
 router.post('/', async (req, res) => {
   const hashedPassword = await bcrypt.hash(req.body.password, 10)
   const user = new User({
@@ -40,7 +39,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-//DELETE ONE USER
+//DELETE ONE USER ✅
 router.delete('/:id', getUser, async (req, res) => {
   try {
     await res.user.remove()
@@ -51,8 +50,8 @@ router.delete('/:id', getUser, async (req, res) => {
 })
 
 
-//UPDATE ONE USER
-router.patch('/', getUser, async (req, res) => {
+//UPDATE ONE USER✅
+router.patch('/:id', getUser, async (req, res) => {
   if (req.body.username != null) {
     res.user.username = req.body.username
   }
@@ -70,9 +69,12 @@ router.patch('/', getUser, async (req, res) => {
   }
 })
 
-//LOGIN USER
+
+//LOGIN USER  ✅
 router.post('/login', async (req, res) => {
   const getUser = await User.find({ email: req.body.email })
+  console.log(getUser[0])
+  console.log(req.body.password)
   if (getUser == null) {
     return res.status(404).json({ message: 'Cannot find user' })
   }
@@ -93,6 +95,37 @@ router.post('/login', async (req, res) => {
   }
 })
 
+
+// posts under construction
+
+// posts 
+router.get('/posts', authenticateToken, async (req, res) => {
+  // try {
+  console.log('Hello there')
+  res.send('Hi')
+  // } catch (error) {
+  //   res.status(500).json({ message: error.message })
+  // }
+  // req.user
+  res.json(posts.filter(post => post.username === req.body.username))
+})
+
+
+// MIDDLEWARES
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+  //  Unauthorized 
+  if (token == null) return res.sendStatus(401)
+  const user = getUser[0]
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    // Forbidden (the token is no longer valid)
+    if (err) return res.sendStatus(403)
+    req.user = user
+    next()
+  })
+}
 
 async function getUser(req, res, next) {
   try {
