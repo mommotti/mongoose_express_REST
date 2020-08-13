@@ -2,6 +2,11 @@ const express = require('express')
 const router = express.Router()
 const User = require('../models/userModel')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const dotenv = require('dotenv')
+dotenv.config()
+
+router.use(express.json())
 
 //GET ALL THE USERS
 router.get('/', async (req, res) => {
@@ -73,7 +78,13 @@ router.post('/login', async (req, res) => {
   }
   try {
     if (await bcrypt.compare(req.body.password, getUser[0].password)) {
-      res.send('Successfully logged in.')
+      //jwt
+      const accessToken = jwt.sign(getUser[0].email, process.env.ACCESS_TOKEN_SECRET)
+      res.json({
+        message: 'Successfully logged in.',
+        accessToken: accessToken
+      })
+      res.send('hello')
     } else {
       res.send('Not allowed.')
     }
