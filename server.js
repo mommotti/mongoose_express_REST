@@ -22,6 +22,10 @@ app.use(express.json())
 const users = require('./routes/users')
 app.use('/api/users', users)
 
+//posts route 
+const posts = require('./routes/posts')
+app.use('/api/posts', posts)
+
 
 const PORT = process.env.PORT || 5000
 

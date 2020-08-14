@@ -2,8 +2,8 @@ const express = require('express')
 const router = express.Router()
 const User = require('../models/userModel')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
+const jwt = require('jsonwebtoken')
 dotenv.config()
 
 router.use(express.json())
@@ -73,8 +73,6 @@ router.patch('/:id', getUser, async (req, res) => {
 //LOGIN USER  ✅
 router.post('/login', async (req, res) => {
   const getUser = await User.find({ email: req.body.email })
-  console.log(getUser[0])
-  console.log(req.body.password)
   if (getUser == null) {
     return res.status(404).json({ message: 'Cannot find user' })
   }
@@ -95,37 +93,6 @@ router.post('/login', async (req, res) => {
   }
 })
 
-
-// posts under construction
-
-// posts 
-router.get('/posts', authenticateToken, async (req, res) => {
-  // try {
-  console.log('Hello there')
-  res.send('Hi')
-  // } catch (error) {
-  //   res.status(500).json({ message: error.message })
-  // }
-  // req.user
-  res.json(posts.filter(post => post.username === req.body.username))
-})
-
-
-// MIDDLEWARES
-
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-  //  Unauthorized 
-  if (token == null) return res.sendStatus(401)
-  const user = getUser[0]
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    // Forbidden (the token is no longer valid)
-    if (err) return res.sendStatus(403)
-    req.user = user
-    next()
-  })
-}
 
 async function getUser(req, res, next) {
   try {
